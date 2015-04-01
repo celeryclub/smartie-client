@@ -4,14 +4,31 @@
 # ./ssnc-meta.sh test/meta.xml
 # ./ssnc-meta.sh -f "%artist, %title, %album" -e "\n\n\n\n" test/meta.xml
 
-# echo $1
+while [[ $# > 1 ]]
+do
+  key="$1"
 
-# hostname=$(hostname)
-# whoami=$(whoami)
+  case $key in
+  -f)
+    FORMAT="$2"
+    shift
+    ;;
+  -e)
+    END_SCREEN="$2"
+    shift
+    ;;
+  *)
+    # unknown option
+    ;;
+  esac
+  shift
+done
 
-# printf "Surname: %s\nName: %s\n" "$hostname" "$whoami"
+IN_FIFO="$1"
 
-metadata_file="$1"
+# echo "$FORMAT"
+# echo "$END_SCREEN"
+# echo "$IN_FIFO"
 
 METADATA_IN_PROGRESS=false
 
@@ -30,6 +47,9 @@ do
   if [ "$code" == 'mdst' ]
   then
     METADATA_IN_PROGRESS=true
+  elif [ "$code" == 'pend' ]
+  then
+    printf "$END_SCREEN"
   fi
 
   # echo "type: $type"
@@ -97,4 +117,4 @@ do
   else
     echo "ERROR: Tag expected. Got \"$line\" instead."
   fi
-done < "$metadata_file"
+done < "$IN_FIFO"
