@@ -18,7 +18,7 @@ METADATA_IN_PROGRESS=false
 while read -r line
 do
   # echo $line | awk -F'[<>]' '/type/{ print $3 }' | read type1
-  read type_hex code_hex length <<< $(echo $line | awk -F '[<>]' '/type/{ print $3, " ", $7, " ", $11 }')
+  read type_hex code_hex length <<< $(echo "$line" | awk -F '[<>]' '/type/{ print $3, " ", $7, " ", $11 }')
 
   # echo "type_hex: $(echo 0x$type_hex | xxd -r)"
   # echo "code_hex: $(echo 0x$code_hex | xxd -r)"
@@ -27,7 +27,7 @@ do
   type1=$(echo 0x$type_hex | xxd -r)
   code=$(echo 0x$code_hex | xxd -r)
 
-  if [ $code == 'mdst' ]
+  if [ "$code" == 'mdst' ]
   then
     METADATA_IN_PROGRESS=true
   fi
@@ -38,17 +38,17 @@ do
 
   # if [ -z "$type_hex" ]
 
-  if [ $type1 != "" ] && [ $code != "" ] && [ $length != "" ]
+  if [ "$type1" != "" ] && [ "$code" != "" ] && [ "$length" != "" ]
   then
-    if (( $length > 0 ))
+    if (( "$length" > 0 ))
     then
       read data_header > /dev/null
       # echo $data_header
 
       read data_tag
-      if [ $code != 'PICT' ]
+      if [ "$code" != 'PICT' ]
       then
-        payload=$(echo $data_tag | awk -F '</' '{ print $1 }' | base64 --decode)
+        payload=$(echo "$data_tag" | awk -F '</' '{ print $1 }' | base64 --decode)
       fi
     else
       :
@@ -57,30 +57,30 @@ do
 
     # echo $payload
 
-    case $code in
+    case "$code" in
     'asal')
       # echo "Album: $payload"
-      ALBUM=$payload
+      ALBUM="$payload"
       ;;
     'asar')
       # echo "Artist: $payload"
-      ARTIST=$payload
+      ARTIST="$payload"
       ;;
     'ascm')
       # echo "Comment: $payload"
-      COMMENT=$payload
+      COMMENT="$payload"
       ;;
     'asgm')
       # echo "Genre: $payload"
-      GENRE=$payload
+      GENRE="$payload"
       ;;
     'minm')
       # echo "Title: $payload"
-      TITLE=$payload
+      TITLE="$payload"
       ;;
     *)
       # echo 'Unknown code'
-      if [ $type1 == 'ssnc' ]
+      if [ "$type1" == 'ssnc' ]
       then
         :
         # echo "type: $type1, code: $code, payload: $payload"
@@ -88,7 +88,7 @@ do
       ;;
     esac
 
-    if [ $code == 'mden' ]
+    if [ "$code" == 'mden' ]
     then
       METADATA_IN_PROGRESS=false
       echo "$ALBUM, $ARTIST, $COMMENT, $GENRE, $TITLE"
