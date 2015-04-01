@@ -27,6 +27,11 @@ do
   type1=$(echo 0x$type_hex | xxd -r)
   code=$(echo 0x$code_hex | xxd -r)
 
+  if [ $code == 'mdst' ]
+  then
+    METADATA_IN_PROGRESS=true
+  fi
+
   # echo "type: $type"
   # echo "code: $code"
   # echo "length: $length"
@@ -39,53 +44,57 @@ do
     then
       read data_header > /dev/null
       # echo $data_header
+
       read data_tag
-
-      # printf ", data: \""
-
       if [ $code != 'PICT' ]
       then
-        payload=$(echo $data_tag | awk -F '<' '{ print $1 }' | base64 --decode)
+        payload=$(echo $data_tag | awk -F '</' '{ print $1 }' | base64 --decode)
       fi
-
-      # echo '"'
     else
-      echo '(no data - length is 0)'
+      :
+      # echo '(no data - length is 0)'
     fi
 
     # echo $payload
 
     case $code in
     'asal')
-      echo "Album: $payload"
+      # echo "Album: $payload"
+      ALBUM=$payload
       ;;
     'asar')
-      echo "Artist: $payload"
+      # echo "Artist: $payload"
+      ARTIST=$payload
       ;;
     'ascm')
-      echo "Comment: $payload"
+      # echo "Comment: $payload"
+      COMMENT=$payload
       ;;
     'asgm')
-      echo "Genre: $payload"
+      # echo "Genre: $payload"
+      GENRE=$payload
       ;;
     'minm')
-      echo "Title: $payload"
+      # echo "Title: $payload"
+      TITLE=$payload
       ;;
     *)
       # echo 'Unknown code'
       if [ $type1 == 'ssnc' ]
       then
-        echo "type: $type1, code: $code, payload: $payload"
+        :
+        # echo "type: $type1, code: $code, payload: $payload"
       fi
       ;;
     esac
+
+    if [ $code == 'mden' ]
+    then
+      METADATA_IN_PROGRESS=false
+      echo "$ALBUM, $ARTIST, $COMMENT, $GENRE, $TITLE"
+    fi
 
   else
     echo "ERROR: Tag expected. Got \"$line\" instead."
   fi
 done < "$metadata_file"
-
-# while [  $COUNTER -lt 10 ]; do
-#   echo The counter is $COUNTER
-#   let COUNTER=COUNTER+1
-# done
