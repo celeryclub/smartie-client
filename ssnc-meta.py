@@ -22,8 +22,15 @@ def debug(message, level=1):
     print '[DEBUG] %s' % message
   return
 
-with open(args.fifo) as f:
-  for line in f:
+fifo = open(args.fifo, 'r')
+with fifo as f:
+  buffer = ''
+  while True:
+    line = f.readline()
+    if line == '':
+        debug('Reached EOF', 2)
+        break
+
     if reading_header:
       debug('This line is a data header', 2)
 
