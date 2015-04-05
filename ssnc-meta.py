@@ -29,8 +29,8 @@ try:
     while True:
       line = f.readline()
       if line == '':
-          debug('Reached EOF', 2)
-          break
+        debug('Reached EOF', 2)
+        break
 
       if reading_header:
         debug('This line is a data header', 2)
