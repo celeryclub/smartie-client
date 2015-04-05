@@ -24,8 +24,8 @@ def debug(message, level=1):
 
 try:
   fifo = open(args.fifo, 'r')
+
   with fifo as f:
-    buffer = ''
     while True:
       line = f.readline()
       if line == '':
