@@ -1,7 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/python -u
 
 # Usage:
-# python ssnc-meta.py -f '%title\n%artist\n%album\n' test/meta.xml
+# python -u ssnc-meta.py -f '%title\n%artist\n%album\n' test/meta.xml
 
 import sys, argparse, re
 
@@ -68,14 +68,14 @@ try:
           code = code_hex.decode('hex')
           length = int(length_string)
 
-          # if code == 'mdst':
-          #   # Metadata start
-          #   # Sanity check - this shouldn't normally be necessary
-          #   debug('Clearing metadata (start)')
-          #   metadata = {}
-          # elif code == 'mden':
-          if code == 'mden':
-            # Metadata end
+          if code == 'pend':
+            # Play stream end
+            if args.endscreen:
+              print args.endscreen.decode('string_escape')
+              debug('Printed endscreen')
+
+          elif code == 'mden':
+            # Metadata block end
             # Magic from http://stackoverflow.com/a/6117124/821471
             replace = dict((re.escape('%' + k), v) for k, v in metadata.iteritems())
             pattern = re.compile('|'.join(replace.keys()))
@@ -85,7 +85,7 @@ try:
             metadata = {}
             debug('Cleared metadata')
 
-          if length > 0:
+          elif length > 0:
             bucket = None
 
             if code == 'asal':
