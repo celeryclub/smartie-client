@@ -1,13 +1,15 @@
 #!/usr/bin/python -u
 
 # Usage:
-# python -u ssnc-meta.py -f '%title\n%artist\n%album\n' test/meta.xml
+# python -u ssnc-meta.py -f '%title\n%artist\n%album\n' -c '%I:%M:%S %p\n\n\n' test/meta.xml
 
-import sys, argparse, re
+import sys, argparse, re, time
+from clock import Clock
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--format', required=True)
 parser.add_argument('-e', '--endscreen')
+parser.add_argument('-c', '--clock')
 parser.add_argument('-v', '--verbose', action='count')
 parser.add_argument('fifo')
 args = parser.parse_args()
@@ -16,6 +18,7 @@ metadata = {}
 reading_header = False
 reading_data = False
 next_data_bucket = None
+ticker = None
 
 def debug(message, level=1):
   if args.verbose and args.verbose >= level:
@@ -24,7 +27,6 @@ def debug(message, level=1):
 
 try:
   fifo = open(args.fifo, 'r')
-
   with fifo as f:
     while True:
       line = f.readline()
@@ -70,12 +72,22 @@ try:
 
           if code == 'pend':
             # Play stream end
-            if args.endscreen:
+            if args.clock:
+              ticker = Clock(args.clock)
+              ticker.start()
+              debug('Started the clock')
+              continue
+            elif args.endscreen:
               print args.endscreen.decode('string_escape')
               debug('Printed endscreen')
+              continue
 
           elif code == 'mden':
             # Metadata block end
+            if ticker and ticker.isAlive():
+              ticker.stop()
+              ticker.join()
+              debug('Stopped the clock')
             # Magic from http://stackoverflow.com/a/6117124/821471
             replace = dict((re.escape('%' + k), v) for k, v in metadata.iteritems())
             pattern = re.compile('|'.join(replace.keys()))
@@ -104,7 +116,6 @@ try:
             next_data_bucket = bucket
             reading_header = True
             continue
-          # elif length 0
         else:
           print 'Error: Expected tag, got "%s"' % line
 except KeyboardInterrupt:
