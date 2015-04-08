@@ -48,7 +48,7 @@ try:
         debug('This line is data', 2)
 
         if next_data_bucket:
-          datum_match = re.match('([a-zA-Z0-9+]+={0,2})<\/data>', line, flags=re.IGNORECASE)
+          datum_match = re.match('([a-zA-Z0-9+\/]+={0,2})<\/data>', line, flags=re.IGNORECASE)
           if datum_match:
             datum = datum_match.groups()[0].decode('base64')
             metadata[next_data_bucket] = datum
