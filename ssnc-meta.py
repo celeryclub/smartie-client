@@ -39,6 +39,8 @@ def stop_clock():
     debug('Stopped the clock')
 
 try:
+  if args.clock: start_clock()
+
   fifo = open(args.fifo, 'r')
   with fifo as f:
     while True:
