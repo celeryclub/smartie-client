@@ -129,4 +129,5 @@ try:
         else:
           print 'Error: Expected tag, got "%s"' % line
 except KeyboardInterrupt:
+  stop_clock()
   sys.stdout.flush()
