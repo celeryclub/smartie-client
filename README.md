@@ -6,7 +6,7 @@ This project is intended to work with a [Sure Electronics LCD display](http://st
 
 ### Requirements
 Additional requirements for Pi MusicBox 0.6 users:
-tcl, [github.com/celeryclub/smartie-utils](https://github.com/celeryclub/smartie-utils), and an upgrade to Shairport Sync version 2.3.
+tcl, [smartie-utils](https://github.com/celeryclub/smartie-utils), and an upgrade to Shairport Sync version 2.3.
 
 ### Arguments
 ```sh
