@@ -9,9 +9,11 @@ Additional requirements for Pi MusicBox 0.6 users:
 tcl, [github.com/celeryclub/smartie-utils](https://github.com/celeryclub/smartie-utils), and an upgrade to Shairport Sync version 2.3.
 
 ### Arguments
+```sh
 -f --format '%title\n%artist\n%album\n'
 -e --endscreen '\n\n\n'
 -c --clock '     %I:%M:%S %p\n\n\n'
+```
 
 ### Example usage
 The -u switch runs Python in unbuffered mode in order to flush the output of print() immediately.
