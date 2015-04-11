@@ -16,11 +16,9 @@ tcl, [smartie-utils](https://github.com/celeryclub/smartie-utils), and an upgrad
 ```
 
 ### Example usage
-The -u switch runs Python in unbuffered mode in order to flush the output of print() immediately.
+The -u switch runs Python in unbuffered mode in order to flush the output of print() immediately. These examples assume a screen with a height of 4 characters.
 
 ```sh
-# These examples assume a screen with a height of 4 characters
-
 # Clear the screen when playback ends
 python -u ~/musicbox-lcd/ssnc-metadata.py -f '%title\n%artist\n%album\n' -e '\n\n\n' ~/shairport-sync-metadata | tclsh ~/smartie-utils/smartie-tail.tcl -tty /dev/ttyUSB0 -buffer 4
 
