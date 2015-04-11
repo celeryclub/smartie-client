@@ -25,7 +25,22 @@ def debug(message, level=1):
     print '[DEBUG] %s' % message
   return
 
+def start_clock():
+  global ticker
+  ticker = Clock(args.clock)
+  ticker.start()
+  debug('Started the clock')
+
+def stop_clock():
+  global ticker
+  if ticker and ticker.isAlive():
+    ticker.stop()
+    ticker.join()
+    debug('Stopped the clock')
+
 try:
+  if args.clock: start_clock()
+
   fifo = open(args.fifo, 'r')
   with fifo as f:
     while True:
@@ -73,9 +88,7 @@ try:
           if code == 'pend':
             # Play stream end
             if args.clock:
-              ticker = Clock(args.clock)
-              ticker.start()
-              debug('Started the clock')
+              start_clock()
               continue
             elif args.endscreen:
               print args.endscreen.decode('string_escape')
@@ -84,10 +97,7 @@ try:
 
           elif code == 'mden':
             # Metadata block end
-            if ticker and ticker.isAlive():
-              ticker.stop()
-              ticker.join()
-              debug('Stopped the clock')
+            if args.clock: stop_clock()
             # Magic from http://stackoverflow.com/a/6117124/821471
             replace = dict((re.escape('%' + k), v) for k, v in metadata.iteritems())
             pattern = re.compile('|'.join(replace.keys()))
@@ -119,4 +129,5 @@ try:
         else:
           print 'Error: Expected tag, got "%s"' % line
 except KeyboardInterrupt:
+  stop_clock()
   sys.stdout.flush()
