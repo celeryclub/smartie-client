@@ -1,8 +1,3 @@
-#!/usr/bin/python -u
-
-# Usage:
-# python -u ssnc-meta.py -f '%title\n%artist\n%album\n' -c '%I:%M:%S %p\n\n\n' test/meta.xml
-
 import sys, argparse, re, time
 from clock import Clock
 
