@@ -1,12 +1,22 @@
 # musicbox-lcd
 
-## Additions to the excellent [Pi MusicBox](http://pimusicbox.com/)
+## Add an LCD screen to your [Pi MusicBox](http://pimusicbox.com/)
 
 This project is intended to work with a [Sure Electronics LCD display](http://store.sure-electronics.com/led/led-display/de-lp14112). Tested on Raspbian.
 
 ### Requirements
 Additional requirements for Pi MusicBox 0.6 users:
-tcl, [smartie-utils](https://github.com/celeryclub/smartie-utils), and an upgrade to Shairport Sync version 2.3.
+ntp, tcllib, [smartie-utils](https://github.com/celeryclub/smartie-utils), and an upgrade to Shairport Sync version 2.3.
+
+```sh
+sudo apt-get install ntp
+sudo apt-get install tcllib
+git clone git@github.com:celeryclub/smartie-utils.git
+git clone git@github.com:mikebrady/shairport-sync.git
+
+#Set timezone
+sudo dpkg-reconfigure tzdata
+```
 
 ### Arguments
 ```sh
@@ -20,10 +30,10 @@ The -u switch runs Python in unbuffered mode in order to flush the output of pri
 
 ```sh
 # Clear the screen when playback ends
-python -u ~/musicbox-lcd/ssnc-metadata.py -f '%title\n%artist\n%album\n' -e '\n\n\n' ~/shairport-sync-metadata | tclsh ~/smartie-utils/smartie-tail.tcl -tty /dev/ttyUSB0 -buffer 4
+python -u ~/musicbox-lcd/ssnc-metadata.py -f "%title\n%artist\n%album\n" -e "\n\n\n" ~/shairport-sync-metadata | tclsh ~/smartie-utils/smartie-tail.tcl -tty /dev/ttyUSB0 -buffer 4 &
 
 # Show a clock when playback ends
-python -u ~/musicbox-lcd/ssnc-metadata.py -f '%title\n%artist\n%album\n' -c '     %I:%M:%S %p\n\n\n' ~/shairport-sync-metadata | tclsh ~/smartie-utils/smartie-tail.tcl -tty /dev/ttyUSB0 -buffer 4
+python -u ~/musicbox-lcd/ssnc-metadata.py -f "%title\n%artist\n%album\n" -c "     %I:%M:%S %p\n\n\n" ~/shairport-sync-metadata | tclsh ~/smartie-utils/smartie-tail.tcl -tty /dev/ttyUSB0 -buffer 4 &
 ```
 
 
@@ -36,6 +46,13 @@ sudo apt-get install git build-essential libconfig-dev automake
 
 Then follow the instructions [here](https://github.com/mikebrady/shairport-sync/tree/2.3). Make sure to switch to the 2.3 branch before configuring and making.
 
+You can run from your home directory like this:
+
+```sh
+~/shairport-sync/shairport-sync -a "Violet" -w -B "/usr/bin/mpc stop" -M ~ &
+```
+
 ## TODO
 * Mpc idle loop for current meta
 * If a line is >width, wrap it (only do this for one line)
+* Or, add iTunes-style side scrolling
