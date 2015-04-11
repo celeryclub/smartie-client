@@ -18,8 +18,8 @@ We have to run Python in unbuffered mode in order to flush the output of print()
 
 ```sh
 # These examples assume a screen with a height of 4 characters.
-python -u ssnc-meta.py -f '%title\n%artist\n%album\n' -e '\n\n\n' ~/shairport-sync-metadata | tclsh ~/smartie-utils/smartie-tail.tcl -tty /dev/ttyUSB0 -buffer 4
-python -u ssnc-meta.py -f '%title\n%artist\n%album\n' ~/shairport-sync-metadata | tclsh ~/smartie-utils/smartie-tail.tcl -tty /dev/ttyUSB0 -buffer 4
+python -u ~/musicbox-lcd/ssnc-metadata.py -f '%title\n%artist\n%album\n' -e '\n\n\n' ~/shairport-sync-metadata | tclsh ~/smartie-utils/smartie-tail.tcl -tty /dev/ttyUSB0 -buffer 4
+python -u ~/musicbox-lcd/ssnc-metadata.py -f '%title\n%artist\n%album\n' ~/shairport-sync-metadata | tclsh ~/smartie-utils/smartie-tail.tcl -tty /dev/ttyUSB0 -buffer 4
 ```
 
 
