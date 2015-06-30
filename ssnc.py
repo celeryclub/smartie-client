@@ -96,8 +96,14 @@ try:
             # Magic from http://stackoverflow.com/a/6117124/821471
             replace = dict((re.escape('%' + k), v) for k, v in metadata.iteritems())
             pattern = re.compile('|'.join(replace.keys()))
-            formatted = pattern.sub(lambda m: replace[re.escape(m.group(0))], args.format)
-            print formatted.decode('string_escape')
+            try:
+              formatted = pattern.sub(lambda m: replace[re.escape(m.group(0))], args.format)
+            except KeyError:
+              print('ERROR')
+              print(replace)
+              print(replace.keys())
+              print('end')
+            print(formatted.decode('string_escape'))
 
             metadata = {}
             debug('Cleared metadata')
