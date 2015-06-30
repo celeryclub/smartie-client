@@ -17,7 +17,7 @@ ticker = None
 
 def debug(message, level=1):
   if args.verbose and args.verbose >= level:
-    print '[DEBUG] %s' % message
+    print('[DEBUG] %s' % message)
   return
 
 def start_clock():
@@ -48,7 +48,7 @@ try:
         debug('This line is a data header', 2)
 
         if not '<data encoding="base64">' in line:
-          print 'Error: Expected base64 header, got "%s"' % line
+          print('Error: Expected base64 header, got "%s"' % line)
 
         reading_header = False
         reading_data = True
@@ -64,7 +64,7 @@ try:
             metadata[next_data_bucket] = datum
             debug('Stored "%s" as "%s"' % (datum, next_data_bucket))
           else:
-            print 'Error: Expected data, got "%s"' % line
+            print('Error: Expected data, got "%s"' % line)
         else:
           debug('Dropped data on the floor', 2)
 
@@ -86,7 +86,7 @@ try:
               start_clock()
               continue
             elif args.endscreen:
-              print args.endscreen.decode('string_escape')
+              print(args.endscreen.decode('string_escape'))
               debug('Printed endscreen')
               continue
 
@@ -122,7 +122,7 @@ try:
             reading_header = True
             continue
         else:
-          print 'Error: Expected tag, got "%s"' % line
+          print('Error: Expected tag, got "%s"' % line)
 except KeyboardInterrupt:
   stop_clock()
   sys.stdout.flush()
