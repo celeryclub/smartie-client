@@ -1,10 +1,8 @@
-import sys, argparse, re, time
-from clock import Clock
+import sys, argparse, re
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--format', required=True)
 parser.add_argument('-e', '--endscreen')
-parser.add_argument('-c', '--clock')
 parser.add_argument('-v', '--verbose', action='count')
 parser.add_argument('fifo')
 args = parser.parse_args()
@@ -13,29 +11,13 @@ metadata = {}
 reading_header = False
 reading_data = False
 next_data_bucket = None
-ticker = None
 
 def debug(message, level=1):
   if args.verbose and args.verbose >= level:
     print('[DEBUG] %s' % message)
   return
 
-def start_clock():
-  global ticker
-  ticker = Clock(args.clock)
-  ticker.start()
-  debug('Started the clock')
-
-def stop_clock():
-  global ticker
-  if ticker and ticker.isAlive():
-    ticker.stop()
-    ticker.join()
-    debug('Stopped the clock')
-
 try:
-  if args.clock: start_clock()
-
   fifo = open(args.fifo, 'r')
   with fifo as f:
     while True:
@@ -82,17 +64,13 @@ try:
 
           if code == 'pend':
             # Play stream end
-            if args.clock:
-              start_clock()
-              continue
-            elif args.endscreen:
+            if args.endscreen:
               print(args.endscreen.decode('string_escape'))
               debug('Printed endscreen')
               continue
 
           elif code == 'mden':
             # Metadata block end
-            if args.clock: stop_clock()
             # Magic from http://stackoverflow.com/a/6117124/821471
             replace = dict((re.escape('%' + k), v) for k, v in metadata.iteritems())
             pattern = re.compile('|'.join(replace.keys()))
@@ -130,5 +108,4 @@ try:
         else:
           print('Error: Expected tag, got "%s"' % line)
 except KeyboardInterrupt:
-  stop_clock()
   sys.stdout.flush()
