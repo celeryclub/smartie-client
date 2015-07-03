@@ -1,23 +1,25 @@
 import sys, argparse, re
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-f', '--format', required=True)
-parser.add_argument('-e', '--endscreen')
-parser.add_argument('-v', '--verbose', action='count')
-parser.add_argument('fifo')
-args = parser.parse_args()
-
-metadata = {}
-reading_header = False
-reading_data = False
-next_data_bucket = None
+if __name__ == "__main__":
+  parser = argparse.ArgumentParser()
+  parser.add_argument('-f', '--format', required=True)
+  parser.add_argument('-e', '--endscreen')
+  parser.add_argument('-v', '--verbose', action='count')
+  parser.add_argument('fifo')
+  args = parser.parse_args()
 
 def debug(message, level=1):
   if args.verbose and args.verbose >= level:
     print('[DEBUG] %s' % message)
   return
 
-try:
+def main():
+  metadata = {}
+  reading_header = False
+  reading_data = False
+  next_data_bucket = None
+
+
   fifo = open(args.fifo, 'r')
   with fifo as f:
     while True:
@@ -107,5 +109,9 @@ try:
             continue
         else:
           print('Error: Expected tag, got "%s"' % line)
-except KeyboardInterrupt:
-  sys.stdout.flush()
+
+if __name__ == "__main__":
+  try:
+    main()
+  except KeyboardInterrupt:
+    sys.stdout.flush()
