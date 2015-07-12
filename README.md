@@ -1,4 +1,12 @@
-# musicbox-lcd
+# Smartie Client
+
+```sh
+# Run in foreground
+python client.py ../shairport-sync-metadata
+
+# Run in background
+python client.py ../shairport-sync-metadata > ./client.log 2>&1 &
+```
 
 ## Add an LCD screen to your [Pi MusicBox](http://pimusicbox.com/)
 
