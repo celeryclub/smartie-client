@@ -8,19 +8,39 @@ if __name__ == "__main__":
   parser.add_argument('fifo')
   args = parser.parse_args()
 
-def debug(message, level=1):
-  if args.verbose and args.verbose >= level:
+  metadata = {}
+
+def set_metadata(text):
+  metadata[next_data_bucket] = datum
+
+def print_metadata(text):
+  # Magic from http://stackoverflow.com/a/6117124/821471
+  replace = dict((re.escape('%' + k), v) for k, v in metadata.items())
+  pattern = re.compile('|'.join(replace.keys()))
+  try:
+    formatted = pattern.sub(lambda m: replace[re.escape(m.group(0))], args.format)
+  except KeyError:
+    print('ERROR')
+    print(replace)
+    print(replace.keys())
+    print('end')
+
+  metadata = {}
+
+def print_endscreen(text):
+  print(text.decode('string_escape'))
+
+def debug_log(message, level=1):
+  if args and args.verbose and args.verbose >= level:
     print('[DEBUG] %s' % message)
   return
 
-def main():
-  metadata = {}
+def watch(fifo_path, on_data, on_flush, on_end, debug=lambda x: x):
   reading_header = False
   reading_data = False
   next_data_bucket = None
 
-
-  fifo = open(args.fifo, 'r')
+  fifo = open(fifo_path, 'r')
   with fifo as f:
     while True:
       line = f.readline()
@@ -45,7 +65,16 @@ def main():
           datum_match = re.match('([a-zA-Z0-9+\/]+={0,2})<\/data>', line, flags=re.IGNORECASE)
           if datum_match:
             datum = datum_match.groups()[0].decode('base64')
-            metadata[next_data_bucket] = datum
+
+            if next_data_bucket == 'title':
+              line = 1
+            elif next_data_bucket == 'artist':
+              line = 2
+            elif next_data_bucket == 'album':
+              line = 4
+
+            on_data(datum.decode('string_escape'), line)
+
             debug('Stored "%s" as "%s"' % (datum, next_data_bucket))
           else:
             print('Error: Expected data, got "%s"' % line)
@@ -66,27 +95,14 @@ def main():
 
           if code == 'pend':
             # Play stream end
-            if args.endscreen:
-              print(args.endscreen.decode('string_escape'))
-              debug('Printed endscreen')
-              continue
+            on_end()
+            debug('Printed endscreen')
+            continue
 
           elif code == 'mden':
             # Metadata block end
-            # Magic from http://stackoverflow.com/a/6117124/821471
-            replace = dict((re.escape('%' + k), v) for k, v in metadata.iteritems())
-            pattern = re.compile('|'.join(replace.keys()))
-            try:
-              formatted = pattern.sub(lambda m: replace[re.escape(m.group(0))], args.format)
-            except KeyError:
-              print('ERROR')
-              print(replace)
-              print(replace.keys())
-              print('end')
-            print(formatted.decode('string_escape'))
-
-            metadata = {}
-            debug('Cleared metadata')
+            debug('flushing...')
+            on_flush()
 
           elif length > 0:
             bucket = None
@@ -112,6 +128,6 @@ def main():
 
 if __name__ == "__main__":
   try:
-    main()
+    watch(args.fifo, set_metadata, print_metadata, lambda: print_endscreen(args.endscreen), debug_log)
   except KeyboardInterrupt:
     sys.stdout.flush()
