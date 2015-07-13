@@ -17,29 +17,43 @@ client.connect((HOST, PORT))
 reply = client.recv(1024).decode()
 print(reply)
 
-buf = {}
+line_buf = {}
 
-def set_line(data, line):
-  global buf
-  buf['line' + str(line)] = data
-
-def flush():
-  global buf
-  print(repr('flushing'))
-  data = json.dumps(buf)
-  buf = {}
+def send_message(message):
+  data = json.dumps(message)
+  print(repr('sending data'))
   print(repr(data))
   client.send(data.encode())
   reply = client.recv(1024).decode()
   print(reply)
 
+def set_line(data, line):
+  global line_buf
+  line_buf['line' + str(line)] = data
+
+def flush_lines(skip_backlight=False):
+  global line_buf
+  print(repr('flushing'))
+  send_message(line_buf)
+  if not skip_backlight:
+    backlight_on()
+  line_buf = {}
+
 def clear_screen():
-  global buf
-  buf['line1'] = 'clear'
-  buf['line2'] = 'clear'
-  buf['line3'] = 'clear'
-  buf['line4'] = 'clear'
-  flush()
+  set_line('', 1)
+  set_line('', 2)
+  set_line('', 3)
+  set_line('', 4)
+  flush_lines(True)
+
+def backlight_on():
+  print('backlight_on')
+  send_message({ 'backlight': 'on' })
+
+def backlight_off():
+  print('backlight_off')
+  send_message({ 'backlight': 'off' })
+  clear_screen()
 
 def debug_log(message, level=1):
   # if args and args.verbose and args.verbose >= level:
@@ -48,6 +62,6 @@ def debug_log(message, level=1):
   print('[DEBUG] %s' % message)
 
 try:
-  watch(args.fifo, set_line, flush, clear_screen, debug_log)
+  watch(args.fifo, set_line, flush_lines, backlight_off, debug_log)
 except KeyboardInterrupt:
   sys.stdout.flush()
