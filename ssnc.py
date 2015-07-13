@@ -62,7 +62,7 @@ def watch(fifo_path, on_data, on_flush, on_end, debug=lambda x: x):
         debug('This line is data', 2)
 
         if next_data_bucket:
-          datum_match = re.match('([a-zA-Z0-9+\/]+={0,2})<\/data>', line, flags=re.IGNORECASE)
+          datum_match = re.match('([a-zA-Z0-9+\/]+={0,2})<\/data><\/item>', line, flags=re.IGNORECASE)
           if datum_match:
             datum = datum_match.groups()[0].decode('base64')
 
@@ -85,7 +85,7 @@ def watch(fifo_path, on_data, on_flush, on_end, debug=lambda x: x):
         continue
 
       else:
-        tag_match = re.match('<type>(\w+)<\/type><code>(\w+)<\/code><length>(\d+)<\/length>', line, flags=re.IGNORECASE)
+        tag_match = re.match('<item><type>(\w+)<\/type><code>(\w+)<\/code><length>(\d+)<\/length>', line, flags=re.IGNORECASE)
         if tag_match:
           debug('This line is a tag', 2)
           type_hex, code_hex, length_string = tag_match.groups()
