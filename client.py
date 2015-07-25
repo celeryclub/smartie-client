@@ -2,13 +2,13 @@ import argparse, sys, socket, json
 from ssnc import watch
 
 parser = argparse.ArgumentParser(add_help=False)
-parser.add_argument('-h', '--host')
+parser.add_argument('-h', '--host', required=True)
 parser.add_argument('-p', '--port', type=int)
 # parser.add_argument('-v', '--verbose', action='count')
 parser.add_argument('fifo')
 args = parser.parse_args()
 
-HOST = args.host or '10.0.1.4'
+HOST = args.host
 PORT = args.port or 8089
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
