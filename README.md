@@ -2,10 +2,10 @@
 
 ```sh
 # Run in foreground
-python client.py ../shairport-sync-metadata
+python client.py -h orange.local /tmp/shairport-sync-metadata
 
 # Run in background
-python client.py ../shairport-sync-metadata > ./client.log 2>&1 &
+python client.py -h orange.local /tmp/shairport-sync-metadata > ./client.log 2>&1 &
 ```
 
 ## Add an LCD screen to your [Pi MusicBox](http://pimusicbox.com/)
@@ -14,16 +14,11 @@ This project is intended to work with a [Sure Electronics LCD display](http://st
 
 ### Requirements
 Additional requirements for Pi MusicBox 0.6 users:
-ntp, tcllib, [smartie-utils](https://github.com/celeryclub/smartie-utils), and an upgrade to Shairport Sync version 2.3.
+ntp, tcllib, [smartie-utils](https://github.com/celeryclub/smartie-utils), and an upgrade to Shairport Sync version 2.3.7.
 
 ```sh
-sudo apt-get install ntp
-sudo apt-get install tcllib
-git clone git@github.com:celeryclub/smartie-utils.git
+sudo apt-get install git
 git clone git@github.com:mikebrady/shairport-sync.git
-
-#Set timezone
-sudo dpkg-reconfigure tzdata
 ```
 
 ### Arguments
