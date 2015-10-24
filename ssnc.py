@@ -31,8 +31,12 @@ def print_endscreen(text):
   print(text.decode('string_escape'))
 
 def debug_log(message, level=1):
-  if args and args.verbose and args.verbose >= level:
-    print('[DEBUG] %s' % message)
+  try:
+    if args and args.verbose and args.verbose >= level:
+      print('[DEBUG] %s' % message)
+  except:
+    if level <= 1:
+      print('[DEBUG] %s' % message)
   return
 
 def watch(fifo_path, on_data, on_flush, on_end, debug=lambda x: x):
