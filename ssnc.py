@@ -1,4 +1,4 @@
-import sys, argparse, re
+import sys, argparse, re, base64
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
@@ -68,7 +68,8 @@ def watch(fifo_path, on_data, on_flush, on_end, debug=lambda x: x):
         if next_data_bucket:
           datum_match = re.match('([a-zA-Z0-9+\/]+={0,2})<\/data><\/item>', line, flags=re.IGNORECASE)
           if datum_match:
-            datum = datum_match.groups()[0].decode('base64')
+            base64string = datum_match.groups()[0]
+            datum = base64.b64decode(base64string.encode()).decode()
 
             if next_data_bucket == 'title':
               line = 1
