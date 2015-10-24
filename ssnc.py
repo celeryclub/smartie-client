@@ -93,8 +93,8 @@ def watch(fifo_path, on_data, on_flush, on_end, debug=lambda x: x):
         if tag_match:
           debug_log('This line is a tag', 2)
           type_hex, code_hex, length_string = tag_match.groups()
-          type = type_hex.decode('hex')
-          code = code_hex.decode('hex')
+          type = bytes.fromhex(type_hex).decode()
+          code = bytes.fromhex(code_hex).decode()
           length = int(length_string)
 
           if code == 'pend':
