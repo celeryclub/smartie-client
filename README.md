@@ -2,10 +2,10 @@
 
 ```sh
 # Run in foreground
-python client.py -h violet.local /tmp/shairport-sync-metadata
+python3 client.py -h violet.local /tmp/shairport-sync-metadata
 
 # Run in background
-python client.py -h violet.local /tmp/shairport-sync-metadata > ./client.log 2>&1 &
+python3 client.py -h violet.local /tmp/shairport-sync-metadata > ./client.log 2>&1 &
 ```
 
 ## Add an LCD screen to your [Pi MusicBox](http://pimusicbox.com/)
