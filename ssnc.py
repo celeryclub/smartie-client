@@ -28,7 +28,7 @@ def print_metadata(text):
   metadata = {}
 
 def print_endscreen(text):
-  print(text.decode('string_escape'))
+  print(text.encode().decode('unicode_escape'))
 
 def debug_log(message, level=1):
   try:
@@ -78,7 +78,7 @@ def watch(fifo_path, on_data, on_flush, on_end, debug=lambda x: x):
             elif next_data_bucket == 'album':
               line = 4
 
-            on_data(datum.decode('string_escape'), line)
+            on_data(datum.encode().decode('unicode_escape'), line)
 
             debug_log('Stored "%s" as "%s"' % (datum, next_data_bucket))
           else:
