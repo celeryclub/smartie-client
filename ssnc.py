@@ -45,11 +45,11 @@ def watch(fifo_path, on_data, on_flush, on_end, debug=lambda x: x):
     while True:
       line = f.readline()
       if line == '':
-        debug('Reached EOF', 2)
+        debug_log('Reached EOF', 2)
         break
 
       if reading_header:
-        debug('This line is a data header', 2)
+        debug_log('This line is a data header', 2)
 
         if not '<data encoding="base64">' in line:
           print('Error: Expected base64 header, got "%s"' % line)
@@ -59,7 +59,7 @@ def watch(fifo_path, on_data, on_flush, on_end, debug=lambda x: x):
         continue
 
       elif reading_data:
-        debug('This line is data', 2)
+        debug_log('This line is data', 2)
 
         if next_data_bucket:
           datum_match = re.match('([a-zA-Z0-9+\/]+={0,2})<\/data><\/item>', line, flags=re.IGNORECASE)
@@ -75,11 +75,11 @@ def watch(fifo_path, on_data, on_flush, on_end, debug=lambda x: x):
 
             on_data(datum.decode('string_escape'), line)
 
-            debug('Stored "%s" as "%s"' % (datum, next_data_bucket))
+            debug_log('Stored "%s" as "%s"' % (datum, next_data_bucket))
           else:
             print('Error: Expected data, got "%s"' % line)
         else:
-          debug('Dropped data on the floor', 2)
+          debug_log('Dropped data on the floor', 2)
 
         reading_data = False
         continue
@@ -87,7 +87,7 @@ def watch(fifo_path, on_data, on_flush, on_end, debug=lambda x: x):
       else:
         tag_match = re.match('<item><type>(\w+)<\/type><code>(\w+)<\/code><length>(\d+)<\/length>', line, flags=re.IGNORECASE)
         if tag_match:
-          debug('This line is a tag', 2)
+          debug_log('This line is a tag', 2)
           type_hex, code_hex, length_string = tag_match.groups()
           type = type_hex.decode('hex')
           code = code_hex.decode('hex')
@@ -96,12 +96,12 @@ def watch(fifo_path, on_data, on_flush, on_end, debug=lambda x: x):
           if code == 'pend':
             # Play stream end
             on_end()
-            debug('Printed endscreen')
+            debug_log('Printed endscreen')
             continue
 
           elif code == 'mden':
             # Metadata block end
-            debug('flushing...')
+            debug_log('flushing...')
             on_flush()
 
           elif length > 0:
