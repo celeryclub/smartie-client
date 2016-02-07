@@ -71,13 +71,13 @@ def watch(fifo_path, on_data, on_flush, on_end, debug=lambda x: x):
             datum = datum_match.groups()[0].decode('base64')
 
             if next_data_bucket == 'title':
-              line = 1
+              line_number = 1
             elif next_data_bucket == 'artist':
-              line = 2
+              line_number = 2
             elif next_data_bucket == 'album':
-              line = 4
+              line_number = 4
 
-            on_data(datum.decode('string_escape'), line)
+            on_data(datum.decode('string_escape'), line_number)
 
             debug_log('Stored "%s" as "%s"' % (datum, next_data_bucket))
           else:
